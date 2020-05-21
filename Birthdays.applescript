@@ -1,7 +1,7 @@
 (* 
 ==========
-Name		: Birthdays
-Description	: Add a task to OmniFocus Inbox for each contact with a nearby birthday
+Name		: Add Birthdays to OmniFocus
+Description	: Add a task to OmniFocus Inbox for contacts with close birthdays
 Author		: Robert van Bregt (https://robertvanbregt.nl/)
 
 Known bugs and features:
@@ -20,6 +20,10 @@ property AHEAD : 7
 
 set cdt to (current date)
 set cyr to year of (current date)
+
+set s to date string of (current date)
+-- display notification s
+
 
 tell application "Contacts"
 	
@@ -40,6 +44,8 @@ tell application "Contacts"
 		set year of bdy to cyr
 		
 		if (bdy is greater than cdt) and (bdy is less than (cdt + AHEAD * days)) then
+			
+			log "Matching birth day: " & short date string of bdy
 			
 			if (byr = 1604) then -- unknown year
 				set age to "zoveelste"
@@ -77,12 +83,16 @@ tell application "Contacts"
 			set task_defer to bdy - 12 * hours
 			set task_due to bdy + 8 * hours
 			
+			
 			set task_note to "---
 Van harte gefeliciteerd met je " & age & " verjaardag. Geniet van je dag.
 ---
 " & task_phone & "
 " & task_email & "
 ---"
+			
+			
+			
 			
 			tell application "OmniFocus"
 				tell default document
@@ -92,7 +102,6 @@ Van harte gefeliciteerd met je " & age & " verjaardag. Geniet van je dag.
 								
 				end tell
 			end tell
-
 		end if
 		
 	end repeat
@@ -112,3 +121,4 @@ on removeGarbageFromLabel(theLabel)
 	set theLabel to my findAndReplaceInText(theLabel, ">!$_", "")
 	return theLabel
 end removeGarbageFromLabel
+
